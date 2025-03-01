@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LeaveManagement.Web.Data
+namespace LeaveManagement.Web.Models.LeaveTypes
 {
-    public class LeaveType
+    public class LeaveTypeReadOnlyVM : BaseLeaveTypeVM
     {
-        public int Id { get; set; }
-        [MaxLength(150)]
         public string Name { get; set; } = string.Empty;
+        [Display(Name = "Maximun Allocation of Days")]
         public int NumberOfDays { get; set; }
     }
 }
