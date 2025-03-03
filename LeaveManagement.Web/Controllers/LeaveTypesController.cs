@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LeaveManagement.Web.Models.LeaveTypes;
+﻿using LeaveManagement.Web.Models.LeaveTypes;
 using LeaveManagement.Web.Services;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace LeaveManagement.Web.Controllers
 {
-    public class LeaveTypesController (ILeaveTypesService _leaveTypesService) : Controller
+    [Authorize(Roles = Roles.Administrator)]
+    public class LeaveTypesController(ILeaveTypesService _leaveTypesService) : Controller
     {
         private string NameExistsValidationMessage = "This leave type already exists in the database.";
-  
+
         // GET: LeaveTypes
         public async Task<IActionResult> Index()
         {
-            
+
             return View(await _leaveTypesService.GetAll());
         }
 
@@ -51,11 +52,11 @@ namespace LeaveManagement.Web.Controllers
             //{
             //    ModelState.AddModelError(nameof(leaveTypeCreate.Name), "Name should not contain vacation");
             //}
-            if(await _leaveTypesService.CheckIfLeaveTypeNameExists(leaveTypeCreate.Name))
+            if (await _leaveTypesService.CheckIfLeaveTypeNameExists(leaveTypeCreate.Name))
             {
                 ModelState.AddModelError(nameof(leaveTypeCreate.Name), NameExistsValidationMessage);
             }
-    
+
             if (ModelState.IsValid)
             {
                 await _leaveTypesService.Create(leaveTypeCreate);
@@ -86,7 +87,7 @@ namespace LeaveManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  LeaveTypeEditVM leaveTypeEdit)
+        public async Task<IActionResult> Edit(int id, LeaveTypeEditVM leaveTypeEdit)
         {
             if (id != leaveTypeEdit.Id)
             {
@@ -102,7 +103,7 @@ namespace LeaveManagement.Web.Controllers
             {
                 try
                 {
-                  
+
                     await _leaveTypesService.Edit(leaveTypeEdit);
                 }
                 catch (DbUpdateConcurrencyException)
