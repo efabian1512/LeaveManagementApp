@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using LeaveManagement.Web.Data;
-using LeaveManagement.Web.Services;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using LeaveManagement.Web.Services.Email;
+using LeaveManagement.Web.Services.LeaveTypes;
+using LeaveManagement.Web.Services.LeaveAllocations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
  
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ILeaveTypesService, LeaveTypesService>();
+builder.Services.AddScoped<IUserInfoService, UserInfoService>();
+builder.Services.AddScoped<ILeaveAllocationsService, LeaveAllocationsService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());

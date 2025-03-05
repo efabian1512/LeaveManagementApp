@@ -1,5 +1,5 @@
 ﻿using LeaveManagement.Web.Models.LeaveTypes;
-using LeaveManagement.Web.Services;
+using LeaveManagement.Web.Services.LeaveTypes;
 using Microsoft.EntityFrameworkCore;
 
 

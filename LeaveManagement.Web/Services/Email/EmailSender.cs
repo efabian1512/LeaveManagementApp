@@ -1,7 +1,6 @@
-﻿
-using System.Net.Mail;
+﻿using System.Net.Mail;
 
-namespace LeaveManagement.Web.Services
+namespace LeaveManagement.Web.Services.Email
 {
     public class EmailSender(IConfiguration _configuration) : IEmailSender
     {
