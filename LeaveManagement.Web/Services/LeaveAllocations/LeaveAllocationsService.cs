@@ -1,13 +1,20 @@
 ﻿
 using AutoMapper;
+using LeaveManagement.Web.Data;
 using LeaveManagement.Web.Models.LeaveAllocations;
+using LeaveManagement.Web.Services.Periods;
+using LeaveManagement.Web.Services.UserInfo;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace LeaveManagement.Web.Services.LeaveAllocations;
 
-public class LeaveAllocationsService(ApplicationDbContext _context, IMapper _mapper, 
-    IUserInfoService userInfoService, UserManager<ApplicationUser> _userManager) : ILeaveAllocationsService 
+public class LeaveAllocationsService(
+    ApplicationDbContext _context, 
+    IMapper _mapper, 
+    IUserService _userService, 
+     IPeriodsService _periodsService
+    ) : ILeaveAllocationsService 
 {
     public async Task AllocateLeave(string employeeId)
     {
@@ -57,8 +64,8 @@ public class LeaveAllocationsService(ApplicationDbContext _context, IMapper _map
     public async Task<EmployeeAllocationVM>  GetEmployeeAllocations(string? userId)
     {
         var user = string.IsNullOrEmpty(userId) 
-            ? await userInfoService.GetUser() 
-            : await _userManager.FindByIdAsync(userId);
+            ? await _userService.GetLoggedInUser() 
+            : await _userService.GetUserById(userId);
          
         var allocations = await GetAllocations(user.Id);
         var allocationVmList = _mapper.Map<List<LeaveAllocation>, List<LeaveAllocationVM>>(allocations);
@@ -78,7 +85,7 @@ public class LeaveAllocationsService(ApplicationDbContext _context, IMapper _map
 
     public async Task<List<EmployeeListVM>> GetEmployees()
     {
-        var users = await _userManager.GetUsersInRoleAsync(Roles.Employee);
+        var users = await _userService.GetEmployees();
         return _mapper.Map<List<ApplicationUser>, List<EmployeeListVM>>(users.ToList());
     }
 
@@ -107,6 +114,15 @@ public class LeaveAllocationsService(ApplicationDbContext _context, IMapper _map
         await _context.LeaveAllocations
             .Where(q => q.Id == allocationEditVm.Id)
             .ExecuteUpdateAsync(s => s.SetProperty(e => e.Days, allocationEditVm.Days));
+    }
+
+    public async Task<LeaveAllocation> GetCurrentAllocation(int leaveTypeId, string employeeId)
+    {
+        var period = await _periodsService.GetCurrentPeriod();
+        return await _context.LeaveAllocations.
+                    FirstAsync(q => q.LeaveTypeId == leaveTypeId
+                    && q.EmployeeId == employeeId
+                    && q.PeriodId == period.Id);
     }
     private async Task<List<LeaveAllocation>> GetAllocations(string? userId)
     {
