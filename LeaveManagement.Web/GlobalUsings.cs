@@ -1,4 +1,4 @@
-﻿global using LeaveManagement.Web.Data;
+﻿global using LeaveManagement.Data;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Identity;
@@ -9,4 +9,5 @@ global using Microsoft.AspNetCore.WebUtilities;
 global using System.ComponentModel.DataAnnotations;
 global using System.Text;
 global using System.Text.Encodings.Web;
-global using LeaveManagement.Web.common;
+global using LeaveManagement.Common.Static;
+

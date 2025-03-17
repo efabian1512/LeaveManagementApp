@@ -1,33 +1,25 @@
-using Microsoft.AspNetCore.Identity;
+using LeaveManagement.Application;
+using LeaveManagement.Application.Services.Email;
+using LeaveManagement.Application.Services.LeaveAllocations;
+using LeaveManagement.Application.Services.LeaveRequests;
+using LeaveManagement.Application.Services.LeaveTypes;
+using LeaveManagement.Application.Services.Periods;
+using LeaveManagement.Application.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using LeaveManagement.Web.Services.Email;
-using LeaveManagement.Web.Services.LeaveTypes;
-using LeaveManagement.Web.Services.LeaveAllocations;
-using LeaveManagement.Web.Services.LeaveRequests;
-using LeaveManagement.Web.Services.UserInfo;
-using LeaveManagement.Web.Services.Periods;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(connectionString);
-    options.ConfigureWarnings(warnings => { warnings.Log(RelationalEventId.PendingModelChangesWarning); });
-}); 
- 
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+DataServicesRegistration.AddDataServices(builder.Services, builder.Configuration);
+ApplicationServicesRegistration.AddApplicationServices(builder.Services);
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ILeaveTypesService, LeaveTypesService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPeriodsService, PeriodsService>();
-builder.Services.AddScoped<ILeaveAllocationsService, LeaveAllocationsService>();
-builder.Services.AddScoped<IleaveRequestsService, LeaveRequestsService>();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
 
+builder.Host.UseSerilog((ctx, config) => config.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminSupervisorOnly", policy =>
@@ -36,9 +28,12 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddAutoMapper(System.Reflection.Assembly.GetExecutingAssembly());
-
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    
+    })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();

@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using LeaveManagement.Web.Services.LeaveAllocations;
+using LeaveManagement.Application.Services.LeaveAllocations;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Web.Areas.Identity.Pages.Account
@@ -17,6 +17,7 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
         public RegisterModel(
             ILeaveAllocationsService leaveAllocationsService,
@@ -25,7 +26,9 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole> roleManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IWebHostEnvironment hostEnvironment
+            )
         {
             this._leaveAllocationsService = leaveAllocationsService;
             _userManager = userManager;
@@ -35,6 +38,7 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
             this._roleManager = roleManager;
             _logger = logger;
             _emailSender = emailSender;
+            this._hostEnvironment = hostEnvironment;
         }
 
         /// <summary>
@@ -95,7 +99,7 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
-            
+
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [Display(Name = "Last Name")]
@@ -105,7 +109,7 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
             [DataType(DataType.Date)]
             [Display(Name = "Date of Birth")]
             public DateOnly DateOfBirth { get; set; }
-            
+
             [Required]
             public string RoleName { get; set; }
         }
@@ -141,11 +145,11 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    
-                    if( Input.RoleName == Roles.Supervisor)
+
+                    if (Input.RoleName == Roles.Supervisor)
                     {
                         await _userManager.AddToRolesAsync(user, [Roles.Employee, Roles.Supervisor]);
-                    } 
+                    }
                     else
                     {
                         await _userManager.AddToRoleAsync(user, Roles.Employee);
@@ -161,8 +165,16 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    //grab the template
+
+                    var emailtemplatePath = Path.Combine(_hostEnvironment.WebRootPath, "templates", "email_layout.html");
+                    var template = await System.IO.File.ReadAllTextAsync(emailtemplatePath);
+                    var messageBody = template
+                        .Replace("{UserName}", $"{Input.FirstName} {Input.LastName}")
+                        .Replace("{MessageContent}",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                    await _emailSender.SendEmailAsync(Input.Email,"Confirm your email", messageBody);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

@@ -1,8 +1,6 @@
-﻿using LeaveManagement.Web.Models.LeaveAllocations;
-using LeaveManagement.Web.Services.LeaveAllocations;
-using LeaveManagement.Web.Services.LeaveTypes;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using LeaveManagement.Application.Models.LeaveAllocations;
+using LeaveManagement.Application.Services.LeaveAllocations;
+using LeaveManagement.Application.Services.LeaveTypes;
 
 namespace LeaveManagement.Web.Controllers
 {
@@ -12,7 +10,7 @@ namespace LeaveManagement.Web.Controllers
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Index()
         {
-          
+
             var employees = await _leaveAllocationsService.GetEmployees();
             return View(employees);
         }
@@ -24,20 +22,20 @@ namespace LeaveManagement.Web.Controllers
         {
 
             await _leaveAllocationsService.AllocateLeave(id);
-            return RedirectToAction(nameof(Details), new { userId = id});
+            return RedirectToAction(nameof(Details), new { userId = id });
         }
 
         [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> EditAllocation(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var allocation = await _leaveAllocationsService.GetEmployeeAllocation(id.Value);
 
-            if(allocation == null)
+            if (allocation == null)
             {
                 return NotFound();
             }
@@ -48,7 +46,7 @@ namespace LeaveManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAllocation(LeaveAllocationEditVM allocation)
         {
-            if(await _leaveTypesService.DaysExceedMaximum(allocation.LeaveType.Id, allocation.Days))
+            if (await _leaveTypesService.DaysExceedMaximum(allocation.LeaveType.Id, allocation.Days))
             {
                 ModelState.AddModelError("Days", "The allocation exceeds the maximum leave type value");
             }
@@ -67,7 +65,7 @@ namespace LeaveManagement.Web.Controllers
 
         public async Task<IActionResult> Details(string? userId)
         {
-          
+
             var employeeVM = await _leaveAllocationsService.GetEmployeeAllocations(userId);
             return View(employeeVM);
         }
