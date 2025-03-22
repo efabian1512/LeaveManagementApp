@@ -22,7 +22,7 @@ namespace LeaveManagement.Data
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LeaveManagement.Data.ApplicationUser", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -102,7 +102,7 @@ namespace LeaveManagement.Data
                         {
                             Id = "839179df-57df-40f3-b88c-489024651b60",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5d6d5a45-e95f-4fd7-aaa0-0e4cc5803c20",
+                            ConcurrencyStamp = "cd4e8ddb-2c2f-45da-8f75-1b927460c27e",
                             DateOfBirth = new DateOnly(1950, 12, 1),
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
@@ -111,15 +111,15 @@ namespace LeaveManagement.Data
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHnD4TKhuQkfYkb5fEqYIvB44P2EW0LnbaGqOMMmxaOf6UkMOxNt/33lqwr62Ay6Pg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEq5Idiq9tw7y5S7+RRxdxwIjYiXKYTngRly4QoVhIuDXbeISUCJXvMx0LfnMNl7cQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d8d2a012-435d-49c4-b5d4-531a7c449e23",
+                            SecurityStamp = "63e1a967-bc87-463d-847a-d9b149402253",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         });
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.LeaveAllocation", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.LeaveAllocation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,10 +148,10 @@ namespace LeaveManagement.Data
 
                     b.HasIndex("PeriodId");
 
-                    b.ToTable("LeaveAllocations");
+                    b.ToTable("LeaveAllocations", (string)null);
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.LeaveRequest", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.LeaveRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,10 +191,10 @@ namespace LeaveManagement.Data
 
                     b.HasIndex("ReviewerId");
 
-                    b.ToTable("LeaveRequests");
+                    b.ToTable("LeaveRequests", (string)null);
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.LeaveRequestStatus", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.LeaveRequestStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -209,7 +209,7 @@ namespace LeaveManagement.Data
 
                     b.HasKey("Id");
 
-                    b.ToTable("LeaveRequestStatuses");
+                    b.ToTable("LeaveRequestStatuses", (string)null);
 
                     b.HasData(
                         new
@@ -234,7 +234,7 @@ namespace LeaveManagement.Data
                         });
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.LeaveType", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.LeaveType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -252,10 +252,10 @@ namespace LeaveManagement.Data
 
                     b.HasKey("Id");
 
-                    b.ToTable("LeaveTypes");
+                    b.ToTable("LeaveTypes", (string)null);
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.Period", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.Period", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -275,7 +275,7 @@ namespace LeaveManagement.Data
 
                     b.HasKey("Id");
 
-                    b.ToTable("Periods");
+                    b.ToTable("Periods", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -442,21 +442,21 @@ namespace LeaveManagement.Data
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.LeaveAllocation", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.LeaveAllocation", b =>
                 {
-                    b.HasOne("LeaveManagement.Data.ApplicationUser", "Employee")
+                    b.HasOne("LeaveManagement.Web.Data.ApplicationUser", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LeaveManagement.Data.LeaveType", "LeaveType")
+                    b.HasOne("LeaveManagement.Web.Data.LeaveType", "LeaveType")
                         .WithMany("LeaveAllocations")
                         .HasForeignKey("LeaveTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LeaveManagement.Data.Period", "Period")
+                    b.HasOne("LeaveManagement.Web.Data.Period", "Period")
                         .WithMany()
                         .HasForeignKey("PeriodId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,27 +469,27 @@ namespace LeaveManagement.Data
                     b.Navigation("Period");
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.LeaveRequest", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.LeaveRequest", b =>
                 {
-                    b.HasOne("LeaveManagement.Data.ApplicationUser", "Employee")
+                    b.HasOne("LeaveManagement.Web.Data.ApplicationUser", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LeaveManagement.Data.LeaveRequestStatus", "LeaveRequestStatus")
+                    b.HasOne("LeaveManagement.Web.Data.LeaveRequestStatus", "LeaveRequestStatus")
                         .WithMany()
                         .HasForeignKey("LeaveRequestStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LeaveManagement.Data.LeaveType", "LeaveType")
+                    b.HasOne("LeaveManagement.Web.Data.LeaveType", "LeaveType")
                         .WithMany()
                         .HasForeignKey("LeaveTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LeaveManagement.Data.ApplicationUser", "Reviewer")
+                    b.HasOne("LeaveManagement.Web.Data.ApplicationUser", "Reviewer")
                         .WithMany()
                         .HasForeignKey("ReviewerId");
 
@@ -513,7 +513,7 @@ namespace LeaveManagement.Data
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("LeaveManagement.Data.ApplicationUser", null)
+                    b.HasOne("LeaveManagement.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -522,7 +522,7 @@ namespace LeaveManagement.Data
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("LeaveManagement.Data.ApplicationUser", null)
+                    b.HasOne("LeaveManagement.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -537,7 +537,7 @@ namespace LeaveManagement.Data
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LeaveManagement.Data.ApplicationUser", null)
+                    b.HasOne("LeaveManagement.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -546,14 +546,14 @@ namespace LeaveManagement.Data
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("LeaveManagement.Data.ApplicationUser", null)
+                    b.HasOne("LeaveManagement.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LeaveManagement.Data.LeaveType", b =>
+            modelBuilder.Entity("LeaveManagement.Web.Data.LeaveType", b =>
                 {
                     b.Navigation("LeaveAllocations");
                 });
